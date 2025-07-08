@@ -13,7 +13,7 @@ struct ProductHomeView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                if homePresenter.listProduct.isEmpty {
+                if homePresenter.listProduct.isEmpty && !homePresenter.isLoading {
                     emptyStateView
                 } else {
                     List (homePresenter.listProduct){ product in
@@ -31,6 +31,20 @@ struct ProductHomeView: View {
             .refreshable {
                 homePresenter.viewDidLoad()
             }
+        }
+        .overlay {
+            if (homePresenter.isLoading) {
+                ZStack {
+                    Color.black.opacity(0.4)
+                        .ignoresSafeArea()
+                    
+                    ProgressView("Mohon Tunggu...")
+                        .padding()
+                        .background(Color.white)
+                        .cornerRadius(10)
+                }
+            }
+            
         }
        
     }

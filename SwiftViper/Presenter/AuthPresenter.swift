@@ -10,7 +10,7 @@ import Foundation
 class AuthPresenter: ObservableObject, AuthPresenterProtocol,
     AuthInteractorOutputProtocol
 {
-
+    @Published var isLoading: Bool = false
     @Published var currentUser: UserResponse? = UserResponse.mock
     @Published var errorMessage: String? = nil
 
@@ -40,6 +40,7 @@ class AuthPresenter: ObservableObject, AuthPresenterProtocol,
     }
 
     func loginButtonTapped(userParam: UserParam) {
+        isLoading = true
         loginInteractor.signInUser(user: userParam) { result in
             DispatchQueue.main.async {
                 switch result {
@@ -48,19 +49,23 @@ class AuthPresenter: ObservableObject, AuthPresenterProtocol,
                     self.currentUser = userResponse.data
                     print(
                         "email: \(String(describing: self.currentUser?.email))")
+                    self.isLoading = false
                 case .failure(let error):
                     print(error)
+                    self.isLoading = false
                 }
             }
         }
     }
 
     func getCurrentUser() {
+        isLoading = true
         if let data = UserDefaults.standard.data(forKey: "currentUser") {
             do {
                 let decoder = JSONDecoder()
                 let user = try decoder.decode(UserResponse.self, from: data)
                 currentUser = user
+                isLoading = false
                 print("User data loaded successfully!")
             } catch {
                 print("Error decoding user data: \(error.localizedDescription)")
@@ -73,14 +78,17 @@ class AuthPresenter: ObservableObject, AuthPresenterProtocol,
     }
 
     func authSucceeded(response: UserResponse) {
+        isLoading = false
         authManager.authenticate(response: response)
     }
 
     func authFailed(error: any Error) {
+        isLoading = false
         errorMessage = error.localizedDescription
     }
 
     func existingAuthFound(user: UserResponse) {
+        isLoading = false
         authManager.authenticate(response: user)
     }
 
@@ -89,6 +97,7 @@ class AuthPresenter: ObservableObject, AuthPresenterProtocol,
     }
 
     func logOutSuccess(isLogout: Bool) {
+        isLoading = false
         authManager.logout()
     }
 

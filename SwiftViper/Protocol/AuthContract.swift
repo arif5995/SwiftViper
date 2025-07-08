@@ -29,6 +29,7 @@ protocol AuthPresenterProtocol: ObservableObject {
     func checkAuth()
     func logOut()
     var currentUser: UserResponse? { get set}
+    var isLoading: Bool { get set }
 }
 
 protocol AuthInteractorInputProtocol: AnyObject {

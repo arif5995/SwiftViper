@@ -16,6 +16,7 @@ protocol HomeViewProtocol: AnyObject {
 protocol HomePresenterProtocol: ObservableObject {
     var listProduct: [Product] { get }
     var errorMessage: String {get set}
+    var isLoading: Bool {get set}
     func viewDidLoad()
 }
 
